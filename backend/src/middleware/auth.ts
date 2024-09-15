@@ -27,7 +27,7 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
             //this line is a proof that this token was actually created by us and not created by someone else
             //and it does this by decoding the coding with the secret key that was used to create the token in the first place 
             const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY as string);
-            req.userId = (decoded as JwtPayload).useId;
+            req.userId = (decoded as JwtPayload ).userId;
             next();
         } catch (error) {
             return res.status(401). json({ message: "unauthorized" });
