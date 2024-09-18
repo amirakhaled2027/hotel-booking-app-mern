@@ -2,7 +2,7 @@
 // is the we aren't interacting directly wit the user entity like we did with the register functionality 
 import express, { Request, Response } from "express";
 import { check, validationResult } from "express-validator";
-import User from "../model/user";
+import User from "../models/user";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import verifyToken from "../middleware/auth";

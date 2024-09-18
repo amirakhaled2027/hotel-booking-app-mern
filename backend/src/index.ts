@@ -49,21 +49,23 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/my-hotels", myHotelRoutes)
 
+
 //making sure that all the requests that aren't API requests go to 
 //our index.html file that lives in the frontend dist folder  
 
 //this means to pass on any requests to our url that aren't api endpoints 
 //and to let the react-router-dom package handle the routing of this request for us
 
-//The reason we have to this: is that some of our roots are behind conditional logic 
+//The reason we have to do this: is that some of our roots are behind conditional logic 
 //and won't be part of the static files (app.use(...)) coz they're generated at request time
 //so because our /add-hotel route is behind conditional logic and is a protected root,
 //it doesn't exist in the static files that we deploy at deploy time
 //so the code gets a bit confused and thinks an it's api route
 //so we have to specify explicitly for all requests that aren't api routes go to the index.html of the frontend 
-app.get("*", (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
-})
+// app.get("/:catchall*", (req: Request, res: Response) => {
+//   res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
+// })
+//I deleted the code coz it's giving me an error and I don't know how to solve it
 
 app.listen(3000, () => {
   console.log("server running on localhost:3000!");

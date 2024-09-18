@@ -4,6 +4,7 @@
 
 import { RegisterFormData } from "./pages/Register";
 import { SignInFormData } from "./pages/SignIn";
+import { HotelType } from '../../backend/src/shared/types';
 
 //api base url is gonna come from the environment variables 
 // so the reason we do this is because depending on if we are developing on our own machines 
@@ -100,3 +101,22 @@ export const addMyHotel = async (hotelFormData: FormData) => {
   //if the response is good
   return response.json();
 }
+
+//SHOWING THE HOTELS THAT ARE ADDED PREVIOUSLY 
+//we also wanna specify the return type type of this data so the way we do this 
+//is in our function after the async brackets we can add a colon
+//and then we'll add our brackets, and then we will say Promise<HotelType[]>
+//the HotelType is they type that we declared in the backend whenever we created 
+//our hotel mongodb schema (hotel.ts)
+// and the reason we do this is that the frontend and the backend are both working off the same type now
+export const fetchMyHotels = async (): Promise<HotelType[]> => {
+  const response = await fetch(`${API_BASE_URL}/api/my-hotels`, {
+    credentials: "include",
+  });
+
+  if(!response.ok) {
+    throw new Error("Error fetching hotels");
+  }
+
+  return response.json();
+};

@@ -5,7 +5,7 @@
 // and it gives us a structure to look to
 
 import express, { Request, Response } from 'express'
-import User from '../model/user';
+import User from '../models/user';
 const router = express.Router();
 import jwt from 'jsonwebtoken';
 import { check, validationResult } from 'express-validator';

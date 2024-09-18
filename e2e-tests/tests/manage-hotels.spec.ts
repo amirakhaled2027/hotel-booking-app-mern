@@ -56,3 +56,18 @@ test("should allow user to add a hotel", async ({ page }) => {
     await page.waitForSelector('text="Hotel Saved!"', { state: 'visible' });
 });
 
+//ADDING NY HOTELS TEST HERE; coz it's part of the manage hotel feature
+test("should display hotels", async({ page }) => {
+  await page.goto(`${UI_URL}my-hotels`);
+  // await expect(page.getByText("NY Ski")).toBeVisible();
+  await page.waitForSelector('text=NY Ski', { state: 'visible' }); 
+  // await expect(page.getByText('NY Ski')).toBeVisible();
+  await expect(page.getByText('Aenean bibendum felis lorem, nec tincidunt augue aliquam et.')).toBeVisible();
+  await expect(page.getByText("NY, USA")).toBeVisible();
+  await expect(page.getByText("Ski Resort")).toBeVisible();
+  await expect(page.getByText("$200 per night")).toBeVisible();
+  await expect(page.getByText("2 adults, 2 children")).toBeVisible();
+  await expect(page.getByText("4 Star Rating")).toBeVisible();
+
+  await expect(page.getByRole("link", {name: "View Detail"})).toBeVisible();
+});
