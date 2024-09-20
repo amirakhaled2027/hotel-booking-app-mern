@@ -120,3 +120,36 @@ export const fetchMyHotels = async (): Promise<HotelType[]> => {
 
   return response.json();
 };
+
+//CALLING THE API THAT IS RESPONSIBLE FOR GIVING ACCESS TO THE USER TO edit his/her HOTEL DATA
+//and we wanna specify a return type on this function so that the component is gonna know what type to receive back
+export const fetchMyHotelById = async (hotelId: string): Promise<HotelType> => {
+  const response = await fetch(`${API_BASE_URL}/api/my-hotels/${hotelId}`, {
+    credentials: "include",
+  });
+  if (!response.ok) {
+    throw new Error("Error fetching Hotels");
+  }
+  return response.json();
+};
+
+
+
+
+//UPDATING THE HOTELS WE EDITED
+export const updateMyHotelById = async (hotelFormData: FormData) => {
+  const response = await fetch(
+    `${API_BASE_URL}/api/my-hotels/${hotelFormData.get("hotelId")}`,
+    {
+      method: "PUT",
+      body: hotelFormData,
+      credentials: "include",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to update Hotel");
+  }
+
+  return response.json();
+};

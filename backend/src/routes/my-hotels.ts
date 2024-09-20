@@ -1,3 +1,5 @@
+//This is where we have all of our endpoints for managing a user's hotel
+
 import express, {Request, Response} from 'express';
 import multer from 'multer';
 import cloudinary from 'cloudinary';
@@ -55,18 +57,7 @@ router.post(
             const newHotel: HotelType = req.body;
 
             //1. upload the images to cloudinary (using the cloudinary SDK)
-            const uploadPromises = imageFiles.map(async(image) => {
-                //encoding the image as a base 64 string 
-                const b64 = Buffer.from(image.buffer).toString("base64")  //creating a buffer from the image object that we're currently on in the map function, and once we have a buffer we can convert it to base 64 string by .toString("base64")  
-                // we need to tell the cloudinary what type this image is/ then we have to attach that to our base 64 string
-                let dataURI = "data:" + image.mimetype + ";base64," + b64;
-                //upload the image to cloudinary 
-                const res = await cloudinary.v2.uploader.upload(dataURI);
-                //what we want from the previous res is to get the url of the hosted image that we just uploaded to cloudinary
-                return res.url;
-            });
-            //this is gonna wait for all images to be uploaded before we get back a sting array that gets assigned to this imageUrls variable 
-            const imageUrls = await Promise.all(uploadPromises);
+            const imageUrls = await uploadImages(imageFiles);  //the code details is at the bottom of the file
             //2. if upload was successful, add the URLs to the new hotel
             newHotel.imageUrls = imageUrls;
             newHotel.lastUpdated = new Date();
@@ -95,9 +86,99 @@ router.get("/", verifyToken, async(req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({ message: "Error fetching hotels"})
     }
-})
+});
+
+//GIVING ACCESS TO THE USER TO edit his/her HOTEL DATA
+router.get("/:id", verifyToken, async (req: Request, res: Response) => {
+    //The way this is work:
+    //whenever we make a request to /api/my-hotels/83735893453(a random staring), 
+    //express will assign the number/string to the id variable in the request and we can get if from the params
+    const id = req.params.id.toString();
+    try {
+        const hotel = await Hotel.findOne({
+            _id: id,
+            //the reason we do this is because we don't want users to be able to edit or view hotels
+            //that don't belong to them 
+            userId: req.userId,
+        });
+        //this will be empty: if there's no hotel or if yhe query can't find one
+        res.json(hotel);
+    } catch (error) {
+        res.json(500).json({ message: "Error fetching hotels" });
+    }
+});
+
+//CREATE THE UPDATE HOTEL ENDPOINT
+router.put(
+    "/:hotelId",
+    verifyToken,
+    upload.array("imageFiles"),
+    async (req: Request, res: Response) => {
+        try {
+            const updatedHotel: HotelType = req.body;
+            updatedHotel.lastUpdated = new Date();
+
+            const hotel = await Hotel.findOneAndUpdate(
+              {
+                _id: req.params.hotelId,
+                userId: req.userId,
+              },
+              updatedHotel,
+              { new: true}
+            );
+
+            if(!hotel) {
+                return res.status(404).json({ message: "Hotel not found" });
+            }
+            
+            //this is anew file that the user decided to add whenever they edit the hotel
+            const files = req.files as Express.Multer.File[];
+            //using the uploadImages function
+            //this is gonna upload the new images to cloudinary
+            //and it'll give us back the URLs as an array of strings which gets assigned to updated image URLs
+            const updatedImageUrls = await uploadImages(files);
+            //add the previous line of code to ur hotels object
+            //[...updatedImageUrls] is making a copy of (updatedImageUrls) and spreading the elements into this new array
+            //and the reason we're doing that is we also want to add the existing image URLs in this array as well
+            hotel.imageUrls = [
+                ...updatedImageUrls,
+                //this is gonna handle the case when the user has decided to delete all the existing images 
+                //so in the case the image URL that they sent to us will be either undefined or an empty array
+                ...(updatedHotel.imageUrls || []), 
+            ];
+
+            await hotel.save();
+            //added after the api-client.ts
+            //this makes sure that our request completes then sends the hotel back as a json object
+            res.status(201).json(hotel);
+        } catch (error) {
+            res.status(500).json({ message: "Something went wrong" });
+        }
+    }
+)
+
+
+
+
+//CLOUDINARY HANDLING THE IMAGES
+async function uploadImages(imageFiles: Express.Multer.File[]) {
+    const uploadPromises = imageFiles.map(async (image) => {
+        //encoding the image as a base 64 string 
+        const b64 = Buffer.from(image.buffer).toString("base64"); //creating a buffer from the image object that we're currently on in the map function, and once we have a buffer we can convert it to base 64 string by .toString("base64")  
+
+        // we need to tell the cloudinary what type this image is/ then we have to attach that to our base 64 string
+        let dataURI = "data:" + image.mimetype + ";base64," + b64;
+        //upload the image to cloudinary 
+        const res = await cloudinary.v2.uploader.upload(dataURI);
+        //what we want from the previous res is to get the url of the hosted image that we just uploaded to cloudinary
+        return res.url;
+    });
+    //this is gonna wait for all images to be uploaded before we get back a sting array that gets assigned to this imageUrls variable 
+    const imageUrls = await Promise.all(uploadPromises);
+    return imageUrls;
+}
+
 
 export default router;
-
 
 

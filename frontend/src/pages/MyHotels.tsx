@@ -13,7 +13,7 @@ function MyHotels() {
         "fetchMyHotels", 
         apiClient.fetchMyHotels,
         {
-            onError: () => {},
+            // onError: () => {},
         }
     );
 
@@ -35,40 +35,77 @@ function MyHotels() {
       </span>
 
       {/* displaying the cards  */}
-      <div className="grid grid-cols-1 gap-8">
+      {/* <div className="grid grid-cols-1 gap-8">
         {hotelData.map((hotel) => (
-          <div className="flex flex-col justify-between border border-slate-300 rounded-lg p-8 gap-5">
-            <h2 className="text-2xl font-bold">{hotel.name}</h2>
-            <div className="whitespace-pre-line">{hotel.description}</div>
+          <div className="flex flex-col justify-between border border-slate-300 rounded-lg p-8 gap-5" >
+            <h2 className="text-2xl font-bold" >{hotel.name}</h2>
+            <div className="whitespace-pre-line" >{hotel.description}</div>
             <div className="grid grid-cols-5 gap-2">
               <div className="border border-slate-300 rounded-sm p-3 flex items-center" >
                 <BsMap className="mr-1" />
                 {hotel.city}, {hotel.country}
               </div>
-              <div className="border border-slate-300 rounded-sm p-3 flex items-center">
+              <div className="border border-slate-300 rounded-sm p-3 flex items-center" >
                 <BsBuilding className="mr-1" />
                 {hotel.type}
-              </div>
-              <div className="border border-slate-300 rounded-sm p-3 flex items-center">
+              </div> 
+              <div className="border border-slate-300 rounded-sm p-3 flex items-center" >
                 <BiMoney className="mr-1" />${hotel.pricePerNight} per night
               </div>
-              <div className="border border-slate-300 rounded-sm p-3 flex items-center">
+              <div className="border border-slate-300 rounded-sm p-3 flex items-center" >
                 <BiHotel className="mr-1" />
                 {hotel.adultCount} adults, {hotel.childCount} children
               </div>
-              <div className="border border-slate-300 rounded-sm p-3 flex items-center">
+              <div className="border border-slate-300 rounded-sm p-3 flex items-center" >
+                <BiStar className="mr-1" />
+                {hotel.starRating} Star Rating
+              </div>
+            </div> */}
+
+
+
+
+            
+      {/* displaying the cards  */}
+      <div className="grid grid-cols-1 gap-8">
+        {hotelData.map((hotel) => (
+          <div className="flex flex-col justify-between border border-slate-300 rounded-lg p-8 gap-5" key={hotel._id}>
+            <h2 className="text-2xl font-bold" key={hotel.name}>{hotel.name}</h2>
+            <div className="whitespace-pre-line" key={hotel.description}>{hotel.description}</div>
+            <div className="grid grid-cols-5 gap-2">
+              <div className="border border-slate-300 rounded-sm p-3 flex items-center" key={`${hotel.city}-${hotel.country}`}>
+                <BsMap className="mr-1" />
+                {hotel.city}, {hotel.country}
+              </div>
+              <div className="border border-slate-300 rounded-sm p-3 flex items-center" key={hotel.type}>
+                <BsBuilding className="mr-1" />
+                {hotel.type}
+              </div> 
+              <div className="border border-slate-300 rounded-sm p-3 flex items-center" key={hotel.pricePerNight}>
+                <BiMoney className="mr-1" />${hotel.pricePerNight} per night
+              </div>
+              <div className="border border-slate-300 rounded-sm p-3 flex items-center" key={`${hotel.adultCount}-${hotel.childCount}`}>
+                <BiHotel className="mr-1" />
+                {hotel.adultCount} adults, {hotel.childCount} children
+              </div>
+              <div className="border border-slate-300 rounded-sm p-3 flex items-center" key={hotel.starRating}>
                 <BiStar className="mr-1" />
                 {hotel.starRating} Star Rating
               </div>
             </div>
 
+
+
+
+
+
             {/* whenever we click the view details link, we're going to redirect the user to the edit hotel page 
                 , and we're gonna pass the hotel ID in the URL so then on the edit hotel page we can have some code that
                 parses the url, gets the ID and fetches that hotel */}
             <span className="flex justify-end">
-              <Link
+            <Link
                 to={`/edit-hotel/${hotel._id}`}
-                className="flex bg-blue-600 text-white text-xl font-bold hover:bg-blue-500 p-2 "
+                className="flex bg-blue-600 text-white text-xl font-bold p-2 hover:bg-blue-500"
               >
                 View Details
               </Link>

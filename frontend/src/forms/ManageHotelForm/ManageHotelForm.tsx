@@ -4,6 +4,8 @@ import TypeSection from "./TypeSection";
 import FacilitiesSection from "./FacilitiesSection";
 import GuestSection from "./GuestSection";
 import ImagesSection from "./ImagesSection";
+import { HotelType } from "../../../../backend/src/shared/types";
+import { useEffect } from "react";
 
 export type HotelFormData = {
     name: string;
@@ -15,18 +17,34 @@ export type HotelFormData = {
     starRating: number;
     facilities: string[];
     imageFiles: FileList;
+    imageUrls: string[];
     adultCount: number;
     childCount: number;
 }
 
 type Props = {
+  //this line is added after working on edit hotel page
+  //and this is gonna cause you to make a lot of changes in this code in this file
+  // hotel? : is to make the hotel prop optional 
+  //reason: because we only receive a hotel when we're on the edit page, so we're editing an existing hotel,
+  //where's on the ad page we won't receive a hotel prop
+  hotel?: HotelType;
   onSave: (HotelFormData: FormData) => void;
   isLoading: boolean;
 }
 
-function ManageHotelForm({ onSave, isLoading }: Props) {
+function ManageHotelForm({ onSave, isLoading, hotel }: Props) {
     const formMethods = useForm<HotelFormData>();
-    const { handleSubmit } = formMethods;
+    //the reset function means reset the form with some new data
+    const { handleSubmit, reset } = formMethods;
+
+    //whenever this component receives some new hotel data
+    //the the useEffect hook is gonna run and it's gonna reset the form of whatever the hotel data is 
+    useEffect(()=> {
+      reset(hotel);
+       //and because we hotel to our dependency array 
+       //what this will do is run anytime the hotel changes 
+    }, [hotel, reset]);
 
     const onSubmit = handleSubmit((formDataJson: HotelFormData) => {
       // console.log(formData);
@@ -35,6 +53,12 @@ function ManageHotelForm({ onSave, isLoading }: Props) {
       
       //to create a form data object:
       const formData = new FormData();
+      //if we're in edit mode or on edit page then we'll have a hotel
+      //and if we do have a hotel then we want to add the hotel._id to the form data
+      //we need to know the hotelId so that our endpoint request will work
+      if (hotel) {
+        formData.append("hotelId", hotel._id);
+      }
       formData.append("name", formDataJson.name);
       formData.append("city", formDataJson.city);
       formData.append("country", formDataJson.country);
@@ -49,7 +73,18 @@ function ManageHotelForm({ onSave, isLoading }: Props) {
       formDataJson.facilities.forEach((facility, index) => {
         formData.append(`facilities[${index}]`, facility);
       });
+
       //Second appending the images
+      //specifying an image of an array that gets added to the form request
+      //and so this is fine for whenever the user is adding images on the AddHotel Page & EditHotel page 
+      //so whenever we're in edit mode or on the edit page then we wanna make sure that we sent back the most up-to-date image urls 
+      //so those are the existing images that the user added whenever they added a hotel in the first place so we can save those as well and don't get lost on the backend
+      //to do this, we're adding a line just above this array
+      if(formDataJson.imageUrls) {
+        formDataJson.imageUrls.forEach((url, index) => {
+          formData.append(`imageUrls[${index}]`, url);
+        });
+      }
       Array.from(formDataJson.imageFiles).forEach((imageFile) => {
         formData.append(`imageFiles`, imageFile);
       });

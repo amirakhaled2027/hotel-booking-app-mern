@@ -6,6 +6,7 @@
 //it's shared between the frontend and the backend
 //and having it in the models folder can be a bit confusing 
 export type HotelType = {
+    // index: Key | null | undefined;
     _id: string;
     userId: string;
     name: string;
