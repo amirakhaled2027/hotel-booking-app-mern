@@ -4,7 +4,7 @@
 
 import { RegisterFormData } from "./pages/Register";
 import { SignInFormData } from "./pages/SignIn";
-import { HotelType } from '../../backend/src/shared/types';
+import { HotelSearchResponse, HotelType } from '../../backend/src/shared/types';
 
 //api base url is gonna come from the environment variables 
 // so the reason we do this is because depending on if we are developing on our own machines 
@@ -134,8 +134,6 @@ export const fetchMyHotelById = async (hotelId: string): Promise<HotelType> => {
 };
 
 
-
-
 //UPDATING THE HOTELS WE EDITED
 export const updateMyHotelById = async (hotelFormData: FormData) => {
   const response = await fetch(
@@ -149,6 +147,69 @@ export const updateMyHotelById = async (hotelFormData: FormData) => {
 
   if (!response.ok) {
     throw new Error("Failed to update Hotel");
+  }
+
+  return response.json();
+};
+
+//ADDING THE FETCH REQUEST TO CALL OUR SEARCH ENDPOINT
+
+//defining a type for our search parameters; this will help us keep track of  
+//all the different search parameters and filters 
+export type SearchParams = {
+  destination?: string;
+  checkIn?: string;
+  checkOut?: string;
+  adultCount?: string;
+  childCount?: string;
+  page?: string;
+  //updating the types after working on the filters on the backend
+  facilities?: string[];
+  types?: string[];
+  stars?: string[];
+  maxPrice?: string;
+  sortOption?: string;
+};
+
+export const searchHotels = async (
+  searchParams: SearchParams
+): Promise<HotelSearchResponse> => {
+  const queryParams = new URLSearchParams();
+
+  queryParams.append("destination", searchParams.destination || "");
+  queryParams.append("checkIn", searchParams.checkIn || "");
+  queryParams.append("checkOut", searchParams.checkOut || "");
+  queryParams.append("adultCount", searchParams.adultCount || "");
+  queryParams.append("childCount", searchParams.childCount || "");
+  queryParams.append("page", searchParams.page || "");
+  //adding them after working on the filters on the backend
+  queryParams.append("maxPrice", searchParams.maxPrice || "");
+  queryParams.append("sortOption", searchParams.sortOption || "");
+
+  //now we need to add the facilities, the types, and the stars
+  //but since these can be arrays as we defined in the types and we can select more than one of them
+  //we have to handle them more differently
+
+  //what this is gonna do: if there are any facilites that were selected by the
+  //user on the UI, then each of those facilities append them to our query params
+  //under the facilities key
+  searchParams.facilities?.forEach((facility) => 
+    queryParams.append("facilities", facility)
+  );
+
+  searchParams.types?.forEach((type) => queryParams.append("types", type));
+  searchParams.stars?.forEach((star) => queryParams.append("stars", star));
+
+
+
+
+  //the ? after search to indicate the start of our query parameter
+  const response = await fetch(
+    `${API_BASE_URL}/api/hotels/search?${queryParams}`
+  );
+
+  if (!response.ok) {
+    throw new Error("Error fetching hotels");
   }
 
   return response.json();

@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import path from "path";  // the path package is part of node (used for rendering )
 import { v2 as cloudinary } from 'cloudinary'
 import myHotelRoutes from './routes/my-hotels'
+import hotelRoutes from './routes/hotels';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -47,7 +48,10 @@ app.use(express.static(path.join(__dirname, "../../frontend/dist")));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/my-hotels", myHotelRoutes)
+//deals with the endpoints that the current logged hotel user needs to manage their own hotels 
+app.use("/api/my-hotels", myHotelRoutes);
+//deals with the endpoints that are needed for visitors to the website to search for hotels nad view hotels,...etc. 
+app.use("/api/hotels", hotelRoutes)
 
 
 //making sure that all the requests that aren't API requests go to 

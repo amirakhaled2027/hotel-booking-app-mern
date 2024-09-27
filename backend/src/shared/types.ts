@@ -22,3 +22,13 @@ export type HotelType = {
     imageUrls: string[];
     lastUpdated: Date;
 };
+
+//the types to the response in router/hotels.ts
+export type HotelSearchResponse = {
+    data: HotelType[];
+    pagination: {
+        total: number;
+        page: number;
+        pages: number;
+    }
+}

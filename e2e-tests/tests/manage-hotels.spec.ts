@@ -59,8 +59,8 @@ test("should allow user to add a hotel", async ({ page }) => {
 //ADDING NY HOTELS TEST HERE; coz it's part of the manage hotel feature
 test("should display hotels", async({ page }) => {
   await page.goto(`${UI_URL}my-hotels`);
-  // await expect(page.getByText("NY Ski")).toBeVisible();
-  await page.waitForSelector('text=NY Ski', { state: 'visible' }); 
+  await expect(page.getByText("NY Ski")).toBeVisible();
+  // await page.waitForSelector('text=NY Ski', { state: 'visible' }); 
   // await expect(page.getByText('NY Ski')).toBeVisible();
   await expect(page.getByText('Aenean bibendum felis lorem, nec tincidunt augue aliquam et.')).toBeVisible();
   await expect(page.getByText("NY, USA")).toBeVisible();
@@ -69,7 +69,7 @@ test("should display hotels", async({ page }) => {
   await expect(page.getByText("2 adults, 2 children")).toBeVisible();
   await expect(page.getByText("4 Star Rating")).toBeVisible();
 
-  await expect(page.getByRole("link", {name: "View Detail"})).toBeVisible();
+  await expect(page.getByRole("link", {name: "View Detail"}).first()).toBeVisible();
 });
 
 //EDIT AND UPDATE HOTEL PAGE
@@ -79,17 +79,17 @@ test("should edit hotel", async ({ page }) => {
   await page.getByRole("link", { name: "View Details" }).first().click();
 
   await page.waitForSelector('[name="name"]', { state: "attached" });
-  await expect(page.locator('[name="name"]')).toHaveValue("Dublin Getaways");
-  await page.locator('[name="name"]').fill("Dublin Getaways UPDATED");
+  await expect(page.locator('[name="name"]')).toHaveValue("Test Hotel");
+  await page.locator('[name="name"]').fill("Test Hotel  UPDATED");
   await page.getByRole("button", { name: "Save" }).click();
   await expect(page.getByText("Hotel Saved!")).toBeVisible();
 
   await page.reload();
 
   await expect(page.locator('[name="name"]')).toHaveValue(
-    "Dublin Getaways UPDATED"
+    "Test Hotel  UPDATED"
   );
-  await page.locator('[name="name"]').fill("Dublin Getaways");
+  await page.locator('[name="name"]').fill("Test Hotel");
   await page.getByRole("button", { name: "Save" }).click();
 });
 
