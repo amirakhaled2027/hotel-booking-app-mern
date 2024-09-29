@@ -1,8 +1,8 @@
 import { useForm } from "react-hook-form";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import * as apiClient from '../api-client'
 import { useAppContext } from "../contexts/AppContext";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 export type SignInFormData = {
     email: string;
@@ -14,6 +14,9 @@ function SignIn() {
     const {showToast} = useAppContext();
     //importing the useNavigate hook
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
+    const location = useLocation();
+
     //setting up a form with react-hook-form and extracting the necessary 
     //values to manage the form state and handle form submission.
     const {
@@ -24,37 +27,38 @@ function SignIn() {
 
     
     const mutation = useMutation(apiClient.signIn, {
-        onSuccess: () => {
-            //when the user succeeding sign in, we wanna:
-            // 1. show the toast
-            // 2. navigate to the homepage
-            // console.log('user has been signed in successfully!!')
-            showToast({
-                message: 'Sign In Successful!',
-                type: "SUCCESS"
-            });
-            setTimeout(() => {
-              navigate('/');
-              //auto refresh the homepage after 2000ms coz the header doesn't wanna appear unless you manually refresh the page 
-              //(discovered this from e2e test)
-              window.location.reload();
-            }, 2000);
-        },
-        //if we get any errors back from our backend, we wanna do something with those as well
-        // and then react query will give us the (error)
-        onError: (error: Error) => {
-            //show the toast as well
-            showToast({
-                message: error.message,
-                type: "ERROR"
-            })
-        } 
+      onSuccess: async () => {
+        //when the user succeeding sign in, we wanna:
+        // 1. show the toast
+        // 2. navigate to the homepage
+        // console.log('user has been signed in successfully!!')
+          showToast({message: "Sign In Successful!", type: "SUCCESS"});
+          //to update the query
+          await queryClient.invalidateQueries("validateToken");
+          // and then navigate to the homepage
+          // navigate("/");
+
+          //changing the navigate after GuestInfoForm.tsx
+          //what we wanna do here here is to add a conditional to check
+          //the react-router-dom state for a location, and if that exists 
+          //we wanna send the user there instead of the homepage, otherwise send them to the homepage
+          //you need to call the useLocation Hook for this
+          navigate(location.state?.from?.pathname || "/");      },
+      //if we get any errors back from our backend, we wanna do something with those as well
+      // and then react query will give us the (error)
+      onError: (error: Error) => {
+        //show the toast as well
+        showToast({
+          message: error.message,
+          type: "ERROR",
+        });
+      },
     });
 
     //now we wanna create an onsubmit function that we can link it to our form
     const onSubmit = handleSubmit( (data) => {
         mutation.mutate(data);
-    }) 
+    });
 
   return (
     <form className="flex flex-col gap-5" onSubmit={onSubmit}>

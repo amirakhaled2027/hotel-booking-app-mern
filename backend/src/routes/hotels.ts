@@ -1,9 +1,12 @@
 import express, {Request, Response} from "express";
 import Hotel from "../models/hotels";
 import { HotelSearchResponse } from "../shared/types";
+import { param, validationResult } from "express-validator";
 
 
 const router = express.Router();
+
+
 
 //when the frontend calls this endpoint it'll be: /api/hotels/search
 router.get("/search", async (req: Request, res: Response) => {
@@ -89,6 +92,35 @@ router.get("/search", async (req: Request, res: Response) => {
     } catch (error) {
         console.log("error", error);
         res.status(500).json({ message: "Something went wrong" });
+    }
+});
+
+
+//we need a way to get an individual hotel when the user navigates to
+//the details page, we're going to store the id in the url, and we will use this id
+//to fetch the given hotel from our API
+//any request that go to /api/hotels/12345645654(the id), it's gonna get handled by this handler
+//this root has to be after /search root, otherwise it'll give you an error 
+router.get("/:id",[param("id").notEmpty().withMessage("Hotel ID is required")], async (req: Request, res: Response) => {
+    //check for any errors
+    const errors = validationResult(req);
+
+    //check the errors that appears (if there're any errors)
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array()})
+    }
+
+    const id = req.params.id.toString();
+
+    //adding a try catch block because we're gonna do some database stuff in here
+    try {
+        const  hotel = await Hotel.findById(id);
+        //if the hotel is empty then this will pass back an empty object,
+        //so the frontend can deal with it as it likes
+        res.json(hotel);
+    } catch (error) {
+        console.log(error); //helping with debugging
+        res.status(500).json({ message: "Error fetching hotel"});
     }
 });
 

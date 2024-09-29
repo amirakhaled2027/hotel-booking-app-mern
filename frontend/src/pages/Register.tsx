@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 //import all the functions from an API client as the API client variable and then in the useMutation we will pass this in as the first parameter
 import * as apiClient from "../api-client";
 import { useAppContext } from "../contexts/AppContext";
@@ -19,6 +19,8 @@ function Register() {
   const navigate = useNavigate();
   //accessing the Register component to the showToast property from AppContext.jsx
   const { showToast } = useAppContext();
+  const queryClient = useQueryClient();
+
 
   const {
     register,
@@ -38,16 +40,13 @@ function Register() {
   // as the state is built into the use mutation hook, so we use
   //we're using useMutation coz we're creating something on the backend
   const mutation = useMutation(apiClient.register, {
-    onSuccess: () => {
+    onSuccess: async () => {
       // console.log("registration successful!");
       showToast({ message: "Registration Success!", type: "SUCCESS" });
-      setTimeout(() => {
-        navigate('/');
-        //auto refresh the homepage after 2000ms coz the header doesn't wanna appear unless you manually refresh the page 
-        //(discovered this from e2e test)
-        window.location.reload();
-      }, 2000);
-      
+      //to update the query
+      await queryClient.invalidateQueries("validateToken");
+      //and then navigate to the homepage
+      navigate("/");
     },
     onError: (error: Error) => {
       //catch the message from the new Error we created in Register.tsx

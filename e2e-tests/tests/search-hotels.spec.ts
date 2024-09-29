@@ -34,4 +34,16 @@ test("Should show hotel search results", async ({page}) => {
 
     await expect(page.getByText("Hotels found in London")).toBeVisible();
     await expect(page.getByText("The Gate London City")).toBeVisible();
-})
+});
+
+//Test for showing a hotel page after clicking on the Sign In to Book Button 
+test("should show hotel detail", async({ page }) => {
+  await page.goto(UI_URL);
+
+  await page.getByPlaceholder("Where are you going?").fill("London");
+  await page.getByRole("button", {name: "Search"}).click();
+
+  await page.getByText("The Gate London City").click();
+  await expect(page).toHaveURL(/detail/);
+  await expect(page.getByRole("button", {name: "Book now"})).toBeVisible();
+}); 

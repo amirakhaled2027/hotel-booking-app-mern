@@ -152,6 +152,7 @@ export const updateMyHotelById = async (hotelFormData: FormData) => {
   return response.json();
 };
 
+
 //ADDING THE FETCH REQUEST TO CALL OUR SEARCH ENDPOINT
 
 //defining a type for our search parameters; this will help us keep track of  
@@ -214,3 +215,16 @@ export const searchHotels = async (
 
   return response.json();
 };
+
+
+//ADDING THE FETCH REQUEST FOR THE DETAILS PAGE
+export const fetchHotelById = async(hotelId: string): Promise<HotelType> => {
+  const response = await fetch(`${API_BASE_URL}/api/hotels/${hotelId}`);
+
+  if (!response.ok) {
+    throw new Error("Error fetching Hotels");
+  }
+
+  return response.json();
+};
+
