@@ -4,7 +4,14 @@ import React, { useContext, useState } from "react";
 import Toast from "../components/Toast";
 import { useQuery } from "react-query";
 import * as apiClient from '../api-client';
+import { loadStripe, Stripe } from "@stripe/stripe-js";
 
+
+//we wanna initialize stripe when the app loads
+//coz we wanna this to happen once when the app loads
+//to connect to Stripe from our frontend, we need to get our publishable key
+//so we'll store this in environment variables
+const STRIPE_PUB_KEY = import.meta.env.VITE_STRIPE_PUB_KEY || ""
 
 type ToastMessage = {
     message: string;
@@ -16,11 +23,15 @@ type ToastMessage = {
 type AppContext = {
     showToast: (toastMessage: ToastMessage) => void;
     isLoggedIn: boolean;
+    stripePromise: Promise<Stripe | null>;
 }
 
 
 //whenever the app load for the first time, the context is gonna be undefined
 const AppContext = React.createContext<AppContext | undefined>(undefined);
+
+//LOAD STRIPE
+const stripePromise = loadStripe(STRIPE_PUB_KEY);
 
 //after creating the context, we need to create the provider
 // a provider is the thing that wraps our components and gives our components access to the things in the context
@@ -43,8 +54,14 @@ export const AppContextProvider = ({ children }: { children: React.ReactNode }) 
         showToast: (toastMessage) => {
           setToast(toastMessage);
         },
-        isLoggedIn: !isError //if there's no error when we try to validate the token it means the token is good
+        isLoggedIn: !isError, //if there's no error when we try to validate the token it means the token is good
                             //and isLoggedIn is gonna be true  and then we pass that to all our components
+
+        //we wanna expose stripePromise from our AppContext so our components can use it
+        stripePromise,
+
+
+                            
       }}
     >
       {toast && (
@@ -59,9 +76,13 @@ export const AppContextProvider = ({ children }: { children: React.ReactNode }) 
   );
 };
 
+
 export const useAppContext = () => {
     const context = useContext(AppContext)
     return context as AppContext
 }
+
+
+
 
 

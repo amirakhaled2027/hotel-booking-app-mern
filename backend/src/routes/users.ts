@@ -9,6 +9,35 @@ import User from '../models/user';
 const router = express.Router();
 import jwt from 'jsonwebtoken';
 import { check, validationResult } from 'express-validator';
+import verifyToken from '../middleware/auth';
+
+//CREATING A NEW ENDPOINT THAT LETS US FETCH THE CURRENT LOGGED IN USER
+//the reason we use an endpoint called "/me", so the frontend doesn't need to 
+//know the id of the current loggedIn user
+//and he doesn't need to know coz it's in the HTTP cookie anyway
+//so it's best to take the useID from the cookie which is more secure
+//and makes it easier for any of our frontend clients that are using our APIs
+router.get("/me", verifyToken, async(req: Request, res: Response) => {
+    //the verifyToken function is gonna parse the HTTP cookie
+    //that gets send to us from the browser that has the loggedIn users info init
+    //and then it attached it onto the request and it get forwarded onto our function here
+    const userId = req.userId;
+
+    try {
+        //this is gonna get the user and it won't include the password field 
+        //in the response coz we don't need that would be a bit of a security risk
+        //to display this on the frontend
+        const user = await User.findById(userId).select("-password");
+        if (!user) {
+            return res.send(400).json({ message: "User not found" });
+        }
+        //and if we do have a user:
+        res.json(user);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Something went wrong" });
+    }
+})
 
 
 //what is after: '/register'?

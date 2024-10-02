@@ -106,7 +106,7 @@ function SearchBar() {
          //these specify what the user can and can't select
           minDate={minDate}
           maxDate={maxDate}
-          placeholderText="check-in Date"
+          placeholderText="Check-in Date"
           className="min-w-full bg-white p-2 focus:outline-none"
           wrapperClassName="min-w-fill"
         />
@@ -123,7 +123,7 @@ function SearchBar() {
          //these specify what the user can and can't select
           minDate={minDate}
           maxDate={maxDate}
-          placeholderText="check-in Date"
+          placeholderText="Check-out Date"
           className="min-w-full bg-white p-2 focus:outline-none"
         />
       </div>

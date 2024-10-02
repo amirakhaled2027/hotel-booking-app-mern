@@ -13,6 +13,7 @@ import MyHotels from "./pages/MyHotels";
 import EditHotel from "./pages/EditHotel";
 import Search from "./pages/Search";
 import Detail from "./pages/Detail";
+import Booking from "./pages/Booking";
 
 function App() {
   
@@ -68,6 +69,16 @@ function App() {
 
         {isLoggedIn && (
           <>
+            {/* this is for booking confirmation page */}
+            <Route
+              path="/hotel/:hotelId/booking"
+              element={
+                <Layout>
+                  <Booking />
+                </Layout>
+              }
+            />
+            
             {/* this is for adding/listing a new hotel */}
             <Route
               path="/add-hotel"
@@ -77,6 +88,7 @@ function App() {
                 </Layout>
               }
             />
+
             {/* this is for editing the user's hotel */}
             <Route
               path="/edit-hotel/:hotelId"

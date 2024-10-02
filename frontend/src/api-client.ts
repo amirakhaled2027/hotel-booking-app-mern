@@ -4,7 +4,8 @@
 
 import { RegisterFormData } from "./pages/Register";
 import { SignInFormData } from "./pages/SignIn";
-import { HotelSearchResponse, HotelType } from '../../backend/src/shared/types';
+import { HotelSearchResponse, HotelType, PaymentIntentResponse, UserType } from '../../backend/src/shared/types';
+import { BookingFormData } from "./forms/BookingForm/BookingForm";
 
 //api base url is gonna come from the environment variables 
 // so the reason we do this is because depending on if we are developing on our own machines 
@@ -20,6 +21,22 @@ import { HotelSearchResponse, HotelType } from '../../backend/src/shared/types';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 // we're going to use react query to handle making this fetch request, storing any state and handling any errors that we get  
 
+
+
+
+//ADDING THE FETCH REQUEST FOR THE /me ENDPOINT TO FETCH THE CURRENT USER
+//added after the details page
+export const fetchCurrentUser = async (): Promise<UserType> => {
+  const response = await fetch(`${API_BASE_URL}/api/users/me`, {
+    credentials: "include",
+  });
+  if (!response.ok) {
+    throw new Error("Error fetching user");
+  }
+  return response.json();
+};
+
+//FETCHING THE REGISTER ENDPOINT
 export const register = async (formData: RegisterFormData) => {
     const response = await fetch( `${API_BASE_URL}/api/users/register` , {
         method: "POST",
@@ -41,7 +58,7 @@ export const register = async (formData: RegisterFormData) => {
 };
 
 
-//SIGN IN
+//FETCHING THE SIGN IN ENDPOINT
 export const signIn = async (formData: SignInFormData) => {
   const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
     method: 'POST',
@@ -227,4 +244,52 @@ export const fetchHotelById = async(hotelId: string): Promise<HotelType> => {
 
   return response.json();
 };
+
+
+//STRIPE PAYMENT ENDPOINT
+//adding some logic to the booking page that calls our create 
+//payments intent endpoint whenever the page loads
+export const createPaymentIntent = async(
+  hotelId: string,
+  numberOfNights: string
+): Promise<PaymentIntentResponse> => {
+  const response = await fetch(
+    `${API_BASE_URL}/api/hotels/${hotelId}/bookings/payment-intent`, {
+      credentials: "include",
+      method: "POST",
+      body: JSON.stringify({ numberOfNights }),
+      headers: {
+        "Content-Type": "application/json",
+      }
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Error fetching payment intent");
+  }
+
+  return response.json();
+};
+
+//TIE ALL STRIPE PAYMENT INTO THE ROOM BOOKING API
+export const createRoomBooking = async (formData: BookingFormData) => {
+  const response = await fetch(
+    `${API_BASE_URL}/api/hotels/${formData.hotelId}/bookings`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(formData),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Error booking room");
+  }
+  //since we're not getting anything back in the request, we don't have to
+  //return anything here
+};
+
 

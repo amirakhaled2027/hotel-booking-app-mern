@@ -1,13 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
-//create a type that represent the user, and it's gonna be a typescript type
-export type UserType = {
-    _id: string;
-    email: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-};
+import { UserType } from '../shared/types';
+
 
 //Now we have a type that represents a user, we have to create our user schema 
 //so this schema is going to determine what properties gets stores against the user ins a given document
