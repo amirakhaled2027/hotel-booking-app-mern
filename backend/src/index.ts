@@ -9,6 +9,7 @@ import path from "path";  // the path package is part of node (used for renderin
 import { v2 as cloudinary } from 'cloudinary'
 import myHotelRoutes from './routes/my-hotels'
 import hotelRoutes from './routes/hotels';
+import bookingRoutes from "./routes/my-bookings";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -51,7 +52,8 @@ app.use("/api/users", userRoutes);
 //deals with the endpoints that the current logged hotel user needs to manage their own hotels 
 app.use("/api/my-hotels", myHotelRoutes);
 //deals with the endpoints that are needed for visitors to the website to search for hotels nad view hotels,...etc. 
-app.use("/api/hotels", hotelRoutes)
+app.use("/api/hotels", hotelRoutes);
+app.use("/api/my-bookings", bookingRoutes);
 
 
 //making sure that all the requests that aren't API requests go to 
