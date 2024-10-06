@@ -234,6 +234,16 @@ export const searchHotels = async (
 };
 
 
+//ADDING THE FETCH HOTEL FOR THE HOMEPAGE
+//since this is a public endpoint, we don't need to pass the credentials in
+export const fetchHotels = async (): Promise<HotelType[]> => {
+  const response = await fetch(`${API_BASE_URL}/api/hotels`);
+  if (!response.ok) {
+    throw new Error("Error fetching hotels")
+  }
+  return response.json();
+};
+
 //ADDING THE FETCH REQUEST FOR THE DETAILS PAGE
 export const fetchHotelById = async(hotelId: string): Promise<HotelType> => {
   const response = await fetch(`${API_BASE_URL}/api/hotels/${hotelId}`);

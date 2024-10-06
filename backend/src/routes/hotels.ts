@@ -101,6 +101,23 @@ router.get("/search", async (req: Request, res: Response) => {
 });
 
 
+//THE LAST ROUTER ADDED TO THIS PROJECT
+//This homepage is gonna be a public endpoint so we're not gonna need to do the Token Verification stuff
+router.get("/", async (req: Request, res: Response) => {
+    try {
+        //every time a hotel gets added or edited then the hotel type id gonna
+        //to store the last updated value as a date against that record 
+        //so it means we can get the most up-to-date ones first and then get the rest as well
+        const hotels = await Hotel.find().sort("-lastUpdated");
+        res.json(hotels);
+    } catch (error) {
+        console.log("error", error);
+        res.status(500).json({ message: "Error fetching hotels" });
+    }
+});
+
+
+
 //we need a way to get an individual hotel when the user navigates to
 //the details page, we're going to store the id in the url, and we will use this id
 //to fetch the given hotel from our API
