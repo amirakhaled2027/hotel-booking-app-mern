@@ -1,22 +1,22 @@
-import { useFormContext } from "react-hook-form"
+import { useFormContext } from "react-hook-form";
 import { HotelFormData } from "./ManageHotelForm";
 
 function DetailsSection() {
-    //this is the context we define in ManageHotelForm when we wrapped our code in the providers
-    const {
-      register,
-      formState: { errors },
-    } = useFormContext<HotelFormData>();
+  //this is the context in which I define ManageHotelForm when I wrap the code in the providers
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<HotelFormData>();
   return (
-    <div className="flex flex-col gap-4">
-        <h1 className="text-3xl font-bold mb-3">Add Hotel</h1>
+    <div className="flex flex-col gap-6">
+      <h1 className="text-3xl font-bold text-emerald-500 mb-5">Add Hotel</h1>
 
-        {/* working on the name field */}
-        <label className="text-gray-700 text-sm font-bold flex-1">
-            Name
+      {/* the name field */}
+      <label className="text-zinc-600 text-base font-semibold flex-1 space-y-2">
+        <span className="text-black">The Name of Your Property</span>
         <input
           type="text"
-          className="border rounded w-full py-1 px-2 font-normal"
+          className="border border-emerald-500 rounded-sm w-full p-2 font-normal focus:outline-none focus:ring-1 focus:ring-emerald-600"
           {...register("name", { required: "This field is required" })}
         />
         {errors.name && (
@@ -24,82 +24,93 @@ function DetailsSection() {
         )}
       </label>
 
-      {/* working on the city and country field */}
-      <div className="flex gap-4">
-        <label className="text-gray-700 text-sm font-bold flex-1">
-                City
-            <input
+      {/* the city and country field */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <label className="text-zinc-600 text-base font-semibold flex-1 space-y-2">
+          <span className="text-black">City</span>
+
+          <input
             type="text"
-            className="border rounded w-full py-1 px-2 font-normal"
+            className="border border-emerald-500 rounded-sm w-full p-2 font-normal focus:outline-none focus:ring-1 focus:ring-emerald-600"
             {...register("city", { required: "This field is required" })}
-            />
-            {errors.city && (
-            <span className="text-red-500">{errors.city.message}</span>
-            )}
+          />
+          {errors.city && (
+            <span className="text-red-600">{errors.city.message}</span>
+          )}
         </label>
-        <label className="text-gray-700 text-sm font-bold flex-1">
-                Country
-            <input
+        <label className="text-zinc-600 text-base font-semibold flex-1 space-y-2">
+          <span className="text-black">Country</span>
+
+          <input
             type="text"
-            className="border rounded w-full py-1 px-2 font-normal"
+            className="border border-emerald-500 rounded-sm w-full p-2 font-normal focus:outline-none focus:ring-1 focus:ring-emerald-600"
             {...register("country", { required: "This field is required" })}
-            />
-            {errors.country && (
-            <span className="text-red-500">{errors.country.message}</span>
-            )}
+          />
+          {errors.country && (
+            <span className="text-red-600">{errors.country.message}</span>
+          )}
         </label>
       </div>
 
-      {/* working on the description field */}
-      <label className="text-gray-700 text-sm font-bold flex-1">
-                Description
-            <textarea
-            // instead of type, define rows: how many rows we want to display in our textarea
-            rows={5}
-            className="border rounded w-full py-1 px-2 font-normal"
-            {...register("description", { required: "This field is required" })}
-            />
-            {errors.description && (
-            <span className="text-red-500">{errors.description.message}</span>
-            )}
-        </label>
+      {/* the description field */}
+      <label className="text-zinc-600 text-base font-semibold flex-1 space-y-2">
+        <span className="text-black">Description</span>
 
-      {/* working on the price per night field */}
-      <label className="text-gray-700 text-sm font-bold max-w-[50%]">
-                Price Per Night
-            <input
+        <textarea
+          rows={5}
+          className="border border-emerald-500 rounded-sm w-full p-2 font-normal focus:outline-none focus:ring-1 focus:ring-emerald-600"
+          {...register("description", { required: "This field is required" })}
+        />
+        {errors.description && (
+          <span className="text-red-500">{errors.description.message}</span>
+        )}
+      </label>
+
+      {/* PRICE PER NIGHT & STAR RATING */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        {/* the price per night field */}
+        <label className="text-zinc-600 text-base font-semibold flex-1 space-y-2">
+          <span className="text-black">Price Per Night</span>
+
+          <input
             type="number"
             min={1}
-            className="border rounded w-full py-1 px-2 font-normal"
-            {...register("pricePerNight", { required: "This field is required" })}
-            />
-            {errors.pricePerNight && (
+            className="border border-emerald-500 rounded-sm w-full p-2 font-normal focus:outline-none focus:ring-1 focus:ring-emerald-600"
+            {...register("pricePerNight", {
+              required: "This field is required",
+            })}
+          />
+          {errors.pricePerNight && (
             <span className="text-red-500">{errors.pricePerNight.message}</span>
-            )}
+          )}
         </label>
 
-      {/* working on star rating field */}
-      <label className="text-gray-700 text-sm font-bold max-w-[50%]">
-                Star Rating
-            <select {...register("starRating", {
-                required: "This field is required",
+        {/* star rating field */}
+        <label className="text-zinc-600 text-base font-semibold flex-1 space-y-2">
+          <span className="text-black">Star Rating</span>
+
+          <select
+            {...register("starRating", {
+              required: "This field is required",
             })}
-            className="border rounded w-full p-2 text-gray-700 font-normal"
-            >
-                <option value="" className="text-sm font-bold">
-                    Select as Rating
-                </option>
-                {[1,2,3,4,5].map((num) => (
-                    <option key={num} value={num}>{num}</option>
-                ))}
-            </select>
-            {errors.starRating && (
+            className="border border-emerald-500 rounded-sm w-full p-2 font-normal focus:outline-none focus:ring-1 focus:ring-emerald-600"
+          >
+            <option value="" className="text-sm font-semibold">
+              Select as Rating
+            </option>
+            {[1, 2, 3, 4, 5].map((num) => (
+              <option key={num} value={num}>
+                {num}
+              </option>
+            ))}
+          </select>
+          {errors.starRating && (
             <span className="text-red-500">{errors.starRating.message}</span>
-            )}
+          )}
         </label>
-        
+      </div>
     </div>
-  )
+  );
 }
 
-export default DetailsSection
+export default DetailsSection;

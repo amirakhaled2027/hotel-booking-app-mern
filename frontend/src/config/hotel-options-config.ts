@@ -16,8 +16,6 @@ export const hotelTypes = [
     "Self Catering",
 ];
 
-
-
 export const hotelFacilities = [
     "Free WiFi",
     "Parking",
@@ -27,4 +25,4 @@ export const hotelFacilities = [
     "Outdoor Pool",
     "Spa",
     "Fitness Center",
-]
+];

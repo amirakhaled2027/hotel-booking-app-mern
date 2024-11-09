@@ -16,10 +16,12 @@ import Detail from "./pages/Detail";
 import Booking from "./pages/Booking";
 import MyBookings from "./pages/MyBookings";
 import Home from "./pages/Home";
+import TopLayout from "./layouts/NavLayout";
+import SearchLayout from "./layouts/SearchLayout";
+import NavLayout from "./layouts/NavLayout";
 
 function App() {
-  
-  const {isLoggedIn} = useAppContext();
+  const { isLoggedIn } = useAppContext();
 
   return (
     <Router>
@@ -28,7 +30,7 @@ function App() {
           path="/"
           element={
             <Layout>
-              <Home/>
+              <Home />
             </Layout>
           }
         />
@@ -37,7 +39,7 @@ function App() {
           path="/search"
           element={
             <Layout>
-              <Search/>
+              <Search />
             </Layout>
           }
         />
@@ -45,27 +47,27 @@ function App() {
         <Route
           path="/detail/:hotelId"
           element={
-            <Layout>
-              <Detail/>
-            </Layout>
+            <TopLayout>
+              <Detail />
+            </TopLayout>
           }
         />
 
         <Route
           path="/register"
           element={
-            <Layout>
+            <TopLayout>
               <Register />
-            </Layout>
+            </TopLayout>
           }
         />
 
         <Route
           path="/sign-in"
           element={
-            <Layout>
+            <NavLayout>
               <SignIn />
-            </Layout>
+            </NavLayout>
           }
         />
 
@@ -75,19 +77,19 @@ function App() {
             <Route
               path="/hotel/:hotelId/booking"
               element={
-                <Layout>
+                <NavLayout>
                   <Booking />
-                </Layout>
+                </NavLayout>
               }
             />
-            
+
             {/* this is for adding/listing a new hotel */}
             <Route
               path="/add-hotel"
               element={
-                <Layout>
+                <NavLayout>
                   <AddHotel />
-                </Layout>
+                </NavLayout>
               }
             />
 
@@ -95,34 +97,34 @@ function App() {
             <Route
               path="/edit-hotel/:hotelId"
               element={
-                <Layout>
+                <NavLayout>
                   <EditHotel />
-                </Layout>
+                </NavLayout>
               }
             />
+
             {/* this is for showing the hotel added in the previous step */}
             <Route
               path="/my-hotels"
               element={
-                <Layout>
+                <SearchLayout>
                   <MyHotels />
-                </Layout>
+                </SearchLayout>
               }
             />
+
             {/* this is for My Booking Page */}
             <Route
               path="/my-bookings"
               element={
-                <Layout>
+                <SearchLayout>
                   <MyBookings />
-                </Layout>
+                </SearchLayout>
               }
             />
           </>
         )}
 
-        {/* it doesn't matter too much where you put the roots and just make sure that any roots that you add  */}
-        {/* is above the catch-all roots coz these run in order, so we wanna the catch-all root to be at the end */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>

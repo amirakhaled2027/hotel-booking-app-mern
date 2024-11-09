@@ -1,111 +1,142 @@
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "react-query";
-import * as apiClient from '../api-client'
+import * as apiClient from "../api-client";
 import { useAppContext } from "../contexts/AppContext";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import RegisterImage from "../assets/register.png";
 
 export type SignInFormData = {
-    email: string;
-    password: string;
-}
+  email: string;
+  password: string;
+};
 
 function SignIn() {
-    //import the show toast message
-    const {showToast} = useAppContext();
-    //importing the useNavigate hook
-    const navigate = useNavigate();
-    const queryClient = useQueryClient();
-    const location = useLocation();
+  const { showToast } = useAppContext();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const location = useLocation();
 
-    //setting up a form with react-hook-form and extracting the necessary 
-    //values to manage the form state and handle form submission.
-    const {
-      register,
-      formState: { errors },
-      handleSubmit
-    } = useForm<SignInFormData>();
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+  } = useForm<SignInFormData>();
 
-    
-    const mutation = useMutation(apiClient.signIn, {
-      onSuccess: async () => {
-        //when the user succeeding sign in, we wanna:
-        // 1. show the toast
-        // 2. navigate to the homepage
-        // console.log('user has been signed in successfully!!')
-          showToast({message: "Sign In Successful!", type: "SUCCESS"});
-          //to update the query
-          await queryClient.invalidateQueries("validateToken");
-          // and then navigate to the homepage
-          // navigate("/");
+  const mutation = useMutation(apiClient.signIn, {
+    onSuccess: async () => {
+      showToast({ message: "Sign In Successful!", type: "SUCCESS" });
+      await queryClient.invalidateQueries("validateToken");
+      navigate(location.state?.from?.pathname || "/");
+    },
+    onError: (error: Error) => {
+      showToast({
+        message: error.message,
+        type: "ERROR",
+      });
+    },
+  });
 
-          //changing the navigate after GuestInfoForm.tsx
-          //what we wanna do here here is to add a conditional to check
-          //the react-router-dom state for a location, and if that exists 
-          //we wanna send the user there instead of the homepage, otherwise send them to the homepage
-          //you need to call the useLocation Hook for this
-          navigate(location.state?.from?.pathname || "/");      },
-      //if we get any errors back from our backend, we wanna do something with those as well
-      // and then react query will give us the (error)
-      onError: (error: Error) => {
-        //show the toast as well
-        showToast({
-          message: error.message,
-          type: "ERROR",
-        });
-      },
-    });
-
-    //now we wanna create an onsubmit function that we can link it to our form
-    const onSubmit = handleSubmit( (data) => {
-        mutation.mutate(data);
-    });
+  const onSubmit = handleSubmit((data) => {
+    mutation.mutate(data);
+  });
 
   return (
-    <form className="flex flex-col gap-5" onSubmit={onSubmit}>
-        <h2 className="text-3xl font-bold">Sign In</h2>
+    <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr] gap-16 mx-auto max-w-7xl text-center mt-[30%] sm:mt-[15%] md:mt-[2%] px-5 md:px-10 items-center">
+      {/* Register Image */}
+      <div className="mx-auto max-w-7xl text-center">
+        <div className="relative h-[70%]">
+          <img
+            src={RegisterImage}
+            alt="Background Image"
+            className="object-cover object-center rounded-lg h-[70%] sm:h-[90%] filter brightness-75"
+          />
+          <div className="absolute inset-0 flex flex-col justify-center items-center justify-top mt-[40%] sm:mt-[60%] lg:mt-[90%] mx-8">
+            <h2 className="mx-auto max-w-4xl flex-col text-3xl sm:text-5xl text-white font-bold md:mb-7 md:text-4xl mb-6 lg:mb-8">
+              Find Your Next Stay,{" "}
+              <span className="text-emerald-500"> Book Now!</span>
+            </h2>
+            <p className="mx-auto mb-6 max-w-2xl text-md text-white text-sm sm:text-md font-[500] md:mb-12">
+              Discover the perfect accommodations for any trip. Explore and
+              secure your next stay in just a few clicks. Start your journey
+              with Nexstay today!
+            </p>
+          </div>
+        </div>
+      </div>
 
-        <label className="text-gray-700 text-sm font-bold flex-1">
-        Email
-        <input
-          type="email"
-          className="border rounded w-full py-1 px-2 font-normal"
-          {...register("email", { required: "This field is required" })}
-        />
-        {errors.email && (
-          <span className="text-red-500">{errors.email.message}</span>
-        )}
-      </label>
-      <label className="text-gray-700 text-sm font-bold flex-1">
-        Password
-        <input
-          type="password"
-          className="border rounded w-full py-1 px-2 font-normal"
-          {...register("password", {
-            required: "This field is required",
-            minLength: {
-              value: 6,
-              message: "Password must be at least 6 characters",
-            },
-          })}
-        />
-        {errors.password && (
-          <span className="text-red-500">{errors.password.message}</span>
-        )}
-      </label>
-      {/* SignIn Button */}
-      <span className="flex items-center justify-between">
-          <span className="text-sm">
-            Not Registered? <Link className="underline" to="/register">Create an account here</Link>
-          </span>
-        <button
-          type="submit"
-          className="bg-blue-600 text-white p-2 font-bold hover:bg-blue-500 text-xl"
+      {/* Register Form */}
+      <div className="mx-auto ml-[3%] md:ml-0 mr-5 w-[90%] flex flex-col text-center mb-14 sm:mb-0 ">
+        <h1 className="text-4xl font-bold text-center text-emerald-500 mb-10">
+          Welcome Back!
+        </h1>
+        <form
+          onSubmit={onSubmit}
+          className="w-full flex flex-col gap-6 border border-zinc-300 rounded-sm p-7 md:border-none"
         >
-          Login
-        </button>
-      </span>
-    </form>
-  )
+          <div className="flex items-start flex-col justify-start">
+            <label
+              htmlFor="email"
+              className="text-md text-black font-semibold mr-2 mb-2"
+            >
+              Email:
+            </label>
+            <input
+              type="email"
+              id="email"
+              placeholder="user1@gmail.com"
+              className="w-full px-3 border-emerald-500 py-2 rounded-sm border-2 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+              {...register("email", { required: "This field is required" })}
+            />
+            {errors.email && (
+              <span className="text-red-500">{errors.email.message}</span>
+            )}
+          </div>
+
+          <div className="flex items-start flex-col justify-start">
+            <label
+              htmlFor="password"
+              className="text-md text-black font-semibold mr-2 mb-2"
+            >
+              Password:
+            </label>
+            <input
+              type="password"
+              id="password"
+              placeholder="123456"
+              className="w-full px-3 border-emerald-500 py-2 rounded-sm border-2 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+              {...register("password", {
+                required: "This field is required",
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters",
+                },
+              })}
+            />
+            {errors.password && (
+              <span className="text-red-500">{errors.password.message}</span>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            className="text-white bg-amber-500 hover:bg-amber-600  font-medium rounded-lg text-sm px-4 py-3 text-center  mr-2 mt-6"
+          >
+            Sign In
+          </button>
+
+          <div className="text-center font-semibold -mt-2">
+            <span className="text-sm text-black ">Don't have an account? </span>
+            <Link
+              to="/register"
+              className="text-emerald-500 hover:text-emerald-600"
+            >
+              Register
+            </Link>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 }
 
-export default SignIn
+export default SignIn;

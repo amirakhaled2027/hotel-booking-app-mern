@@ -1,31 +1,24 @@
-import Footer from "../components/Footer"
-import Header from "../components/Header"
-import Hero from "../components/Hero"
-import SearchBar from "../components/SearchBar";
-
-
-// We want to add the props to our layout components and these props will contain 
-//the children that get past into the layout 
-//we will then render the children in between the header and the footer 
-//to achieve the effect we want
-
-
-//define an interface for the props
-//it describes the props that this component expects
+import Footer from "../components/Footer";
+import Header from "../components/Header";
+import Hero from "../components/Hero";
 interface Props {
   children: React.ReactNode;
 }
 
-function Layout({children}: Props) {
+function Layout({ children }: Props) {
   return (
-    <div className="flex flex-col min-h-screen">
-        <Header/>
-        <Hero/>
-        <div className="container mx-auto"><SearchBar/></div>
-        <div className="container mx-auto py-10 flex-1">{children}</div>
-        <Footer/>
+    <div className="flex flex-col min-h-screen ">
+      <Header />
+
+      <div className="mt-[20%] sm:mt-[10%] md:mt-0">
+        <Hero />
+      </div>
+
+      <div className="">{children}</div>
+
+      <Footer />
     </div>
-  )
+  );
 }
 
-export default Layout
+export default Layout;
