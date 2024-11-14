@@ -13,7 +13,7 @@ function Home() {
   return (
     <section>
       {/* Container */}
-      <div className="px-5 md:px-10 mt-20 mb-20 md:mt-0 h-[70%] rounded-sm ">
+      <div className="px-5 md:px-10 mt-72 sm:mt-28 mb-20 md:mt-0 h-[70%] rounded-sm ">
         {/* Component */}
         <div className="  mx-auto max-w-7xl ">
           <h2 className="text-5xl font-bold text-emerald-500 mb-8">
