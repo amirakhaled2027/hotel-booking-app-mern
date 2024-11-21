@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 //ME: the first thing we want the test to do is to make it navigate to our homepage
-const UI_URL = "http://localhost:5173/";
+const UI_URL = "http://localhost:5174/";
 
 //ME: I'M GONNA CHANGE HERE
 test("should allow the user to sign in", async ({ page }) => {
